@@ -4,22 +4,26 @@ import { validarDisponibilidade } from "./nodes/validarDisponibilidade.ts";
 import { indisponivelReserva } from "./nodes/indisponivelReserva.ts";
 import { RestauranteData, type RestauranteState } from "./state.ts";
 import { disponivelReserva } from "./nodes/disponivelReserva.ts";
+import { inserirReserva } from "./nodes/inserirReserva.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("classificarPedido", classificarPedido)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
     .addNode("disponivelReserva", disponivelReserva)
+    .addNode("inserirReserva", inserirReserva)
 
     .addConditionalEdges(
       'validarDisponibilidade',
       (state: RestauranteState): string => {
-        if (state.erro || !state.classificacaoDoPedido || state.classificacaoDoPedido === 'Desconhecido') {
+        if (
+          state.erro ||
+          !state.classificacaoDoPedido ||
+          state.classificacaoDoPedido === 'Desconhecido' ||
+          !state.sucesso
+        ) {
           return 'indisponivelReserva';
         }
-
-        if (!state.sucesso)
-            return 'indisponivelReserva';
 
         return 'disponivelReserva';
       },
@@ -30,7 +34,8 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     )
     .addEdge(START, "classificarPedido")
     .addEdge("classificarPedido", "validarDisponibilidade")
-    .addEdge("validarDisponibilidade", "indisponivelReserva")
+    .addEdge("disponivelReserva", "inserirReserva")
+
     .addEdge("indisponivelReserva", END)
 
     .compile();
