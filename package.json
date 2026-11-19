@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/DevPeress/ChatBot-Restaurante/issues"
   },
-  "homepage": "https://github.com/DevPeress/ChatBot-Restaurante#readme"
+  "homepage": "https://github.com/DevPeress/ChatBot-Restaurante#readme",
+  "dependencies": {
+    "@langchain/core": "^1.4.2",
+    "@langchain/openrouter": "^0.4.25",
+    "dotenv": "^18.0.10",
+    "langchain": "^1.6.7"
+  }
 }
