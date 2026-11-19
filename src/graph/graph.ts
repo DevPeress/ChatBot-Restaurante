@@ -5,6 +5,11 @@ import { indisponivelReserva } from "./nodes/indisponivelReserva.ts";
 import { RestauranteData, type RestauranteState } from "./state.ts";
 import { disponivelReserva } from "./nodes/disponivelReserva.ts";
 import { inserirReserva } from "./nodes/inserirReserva.ts";
+import {
+  avaliarConfirmacaoReserva,
+  ultimaRespostaSeguePedidoDeConfirmacao,
+} from "./nodes/avaliarConfirmacaoReserva.ts";
+import { reservaRecusada } from "./nodes/reservaRecusada.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("classificarPedido", classificarPedido)
@@ -12,7 +17,22 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("indisponivelReserva", indisponivelReserva)
     .addNode("disponivelReserva", disponivelReserva)
     .addNode("inserirReserva", inserirReserva)
+    .addNode("avaliarConfirmacaoReserva", avaliarConfirmacaoReserva)
+    .addNode("reservaRecusada", reservaRecusada)
 
+    .addConditionalEdges(
+      START,
+      (state: RestauranteState): string =>
+        state.confirmacaoReserva === "aguardando" ||
+        (!state.confirmacaoReserva &&
+          ultimaRespostaSeguePedidoDeConfirmacao(state.messages))
+          ? "avaliarConfirmacaoReserva"
+          : "classificarPedido",
+      {
+        avaliarConfirmacaoReserva: "avaliarConfirmacaoReserva",
+        classificarPedido: "classificarPedido",
+      }
+    )
     .addConditionalEdges(
       'validarDisponibilidade',
       (state: RestauranteState): string => {
@@ -32,10 +52,29 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         disponivelReserva: 'disponivelReserva',
       }
     )
-    .addEdge(START, "classificarPedido")
-    .addEdge("classificarPedido", "validarDisponibilidade")
-    .addEdge("disponivelReserva", "inserirReserva")
+    .addConditionalEdges(
+      "avaliarConfirmacaoReserva",
+      (state: RestauranteState): string => {
+        if (state.confirmacaoReserva === "confirmada") {
+          return "inserirReserva";
+        }
 
+        if (state.confirmacaoReserva === "recusada") {
+          return "reservaRecusada";
+        }
+
+        return "disponivelReserva";
+      },
+      {
+        inserirReserva: "inserirReserva",
+        reservaRecusada: "reservaRecusada",
+        disponivelReserva: "disponivelReserva",
+      }
+    )
+    .addEdge("classificarPedido", "validarDisponibilidade")
+    .addEdge("disponivelReserva", END)
+    .addEdge("inserirReserva", END)
+    .addEdge("reservaRecusada", END)
     .addEdge("indisponivelReserva", END)
 
     .compile();
