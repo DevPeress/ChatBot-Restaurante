@@ -1,0 +1,21 @@
+{
+  "name": "chatbot-restaurante",
+  "version": "1.0.0",
+  "description": "Um projeto de chatbot para restaurante desenvolvido com Node.js e LangChain.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevPeress/ChatBot-Restaurante.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DevPeress/ChatBot-Restaurante/issues"
+  },
+  "homepage": "https://github.com/DevPeress/ChatBot-Restaurante#readme"
+}
