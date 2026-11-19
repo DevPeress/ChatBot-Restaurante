@@ -5,8 +5,9 @@ import { z } from "zod";
 
 export const RestauranteData = z.object({
     messages: withLangGraph(
-        z.custom<BaseMessage[]>(),
-        MessagesZodMeta),
+        z.array(z.custom<BaseMessage>()),
+        MessagesZodMeta
+    ),
         
     nomeReservado: z.string().optional(),
     qtdePessoas: z.number().optional(),
