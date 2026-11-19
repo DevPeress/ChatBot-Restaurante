@@ -29,6 +29,7 @@ export function classificarPedido(state: any) {
                 ...state
             };
         } catch (error) {
+            console.error("Erro ao classificar o pedido:", error);
             return  {
                 sucesso: false,
                 erro: "Erro ao classificar o pedido: " + (error as Error).message,
