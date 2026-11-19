@@ -1,3 +1,3 @@
 import { graphData } from "./graph/graph.ts";
 
-graphData();
+void graphData;
