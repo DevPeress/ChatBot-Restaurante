@@ -1,20 +1,13 @@
-import { MessagesZodMeta } from "@langchain/langgraph/web";
-import { withLangGraph } from "@langchain/langgraph/zod";
-import type { BaseMessage } from "langchain";
-import { z } from "zod";
+import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 
-export const RestauranteData = z.object({
-    messages: withLangGraph(
-        z.custom<BaseMessage[]>(),
-        MessagesZodMeta),
-        
-    nomeReservado: z.string().optional(),
-    qtdePessoas: z.number().optional(),
-    dataHora: z.string().optional(),
-    classificacaoDoPedido: z.enum(["Alta", "Média", "Baixa"]).optional(),
-
-    sucesso: z.boolean().optional(),
-    erro: z.string().optional(),
+export const RestauranteData = Annotation.Root({
+    ...MessagesAnnotation.spec,
+    nomeReservado: Annotation<string | undefined>(),
+    qtdePessoas: Annotation<number | undefined>(),
+    dataHora: Annotation<string | undefined>(),
+    classificacaoDoPedido: Annotation<"Alta" | "Média" | "Baixa" | undefined>(),
+    sucesso: Annotation<boolean | undefined>(),
+    erro: Annotation<string | undefined>(),
 });
 
-export type RestauranteState = z.infer<typeof RestauranteData>;
+export type RestauranteState = typeof RestauranteData.State;
