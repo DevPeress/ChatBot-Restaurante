@@ -5,9 +5,14 @@ import type { RestauranteState } from "../state.ts";
 export async function disponivelReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
     return {
         sucesso: true,
+        confirmacaoReserva: "aguardando",
         messages: [
             ...state.messages,
-            new AIMessage('Reserva disponível! Posso confirmar a reserva para você?')
+            new AIMessage(
+                state.confirmacaoReserva === "aguardando"
+                    ? "Não entendi sua resposta. Deseja confirmar a reserva? Responda sim ou não."
+                    : "Reserva disponível! Deseja confirmar a reserva? Responda sim ou não."
+            )
         ],
     } 
 }
