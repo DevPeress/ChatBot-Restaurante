@@ -44,6 +44,10 @@ Execute o servidor com `npm run dev`. A rota `POST /chat` aceita os dados da
 reserva e a mensagem atual. Para continuar uma conversa, envie de volta o
 histórico `messages` e os campos de estado retornados pela rota.
 
+O fluxo usa o modelo para identificar o nome, a data e o horário, e a
+quantidade de pessoas nas mensagens do usuário. Se algum desses dados estiver
+faltando, o bot informa o que precisa antes de continuar com a reserva.
+
 ```json
 {
   "message": "Quero reservar uma mesa",
