@@ -13,8 +13,6 @@ interface HorarioNormalizado {
     hora: string;
 }
 
-let reservas: Reserva[] = [];
-
 const meses: Record<string, number> = {
     janeiro: 1,
     fevereiro: 2,
