@@ -76,6 +76,7 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         mensagemErroAoReservar: "mensagemErroAoReservar",
       }
     )
+    .addEdge("validarDadosReserva", "validarDisponibilidade")
     .addEdge("disponivelReserva", END)
     .addEdge("inserirReserva", END)
     .addEdge("reservaRecusada", END)
