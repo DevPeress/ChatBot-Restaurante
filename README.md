@@ -35,6 +35,10 @@ ao cliente e permite cadastrar ou cancelar reservas em memória.
 - npm
 - Chave de API da OpenRouter
 
+## Foto do LangSmith
+
+![Preview do LangSmith](./img/projeto.jpg)
+
 ## Configuração
 
 1. Instale as dependências:
