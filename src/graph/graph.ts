@@ -10,8 +10,10 @@ import {
   ultimaRespostaSeguePedidoDeConfirmacao,
 } from "./nodes/avaliarConfirmacaoReserva.ts";
 import { reservaRecusada } from "./nodes/reservaRecusada.ts";
+import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
+    .addNode("validarDadosReserva", validarDadosReserva)
     .addNode("classificarPedido", classificarPedido)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
@@ -27,10 +29,19 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         (!state.confirmacaoReserva &&
           ultimaRespostaSeguePedidoDeConfirmacao(state.messages))
           ? "avaliarConfirmacaoReserva"
-          : "classificarPedido",
+          : "validarDadosReserva",
       {
         avaliarConfirmacaoReserva: "avaliarConfirmacaoReserva",
+        validarDadosReserva: "validarDadosReserva",
+      }
+    )
+    .addConditionalEdges(
+      "validarDadosReserva",
+      (state: RestauranteState): string =>
+        state.sucesso ? "classificarPedido" : END,
+      {
         classificarPedido: "classificarPedido",
+        [END]: END,
       }
     )
     .addConditionalEdges(
