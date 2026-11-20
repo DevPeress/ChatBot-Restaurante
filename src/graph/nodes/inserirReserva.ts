@@ -1,5 +1,6 @@
 import { AIMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
+import { adicionarReserva } from "../../services/reservas.ts";
 
 export async function inserirReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
     if (state.confirmacaoReserva !== "confirmada") {
@@ -10,6 +11,13 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
     }
 
     try {
+        // Simular a inserção da reserva
+        adicionarReserva({
+            nomeReservante: state.nomeReservado!,
+            horarioReserva: state.dataHora!,
+            numeroPessoas: state.qtdePessoas!,
+        });
+
         return {
             sucesso: true,
             messages: [
