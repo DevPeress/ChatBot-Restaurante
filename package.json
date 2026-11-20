@@ -4,7 +4,7 @@
   "description": "Um projeto de chatbot para restaurante desenvolvido com Node.js e LangChain.",
   "main": "index.js",
   "scripts": {
-    "dev": "node --env-file .env --inspect --watch src/index.ts",
+    "dev": "node --env-file .env --import tsx --inspect --watch src/index.ts",
     "langgraph:serve": "npx @langchain/langgraph-cli dev"
   },
   "repository": {
