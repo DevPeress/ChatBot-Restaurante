@@ -11,6 +11,7 @@ import {
 } from "./nodes/avaliarConfirmacaoReserva.ts";
 import { reservaRecusada } from "./nodes/reservaRecusada.ts";
 import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
+import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("validarDadosReserva", validarDadosReserva)
@@ -21,6 +22,7 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("inserirReserva", inserirReserva)
     .addNode("avaliarConfirmacaoReserva", avaliarConfirmacaoReserva)
     .addNode("reservaRecusada", reservaRecusada)
+    .addNode("mensagemErroAoReservar", mensagemErroAoReservar)
 
     .addConditionalEdges(
       START,
@@ -74,12 +76,12 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
           return "reservaRecusada";
         }
 
-        return "disponivelReserva";
+        return "mensagemErroAoReservar";
       },
       {
         inserirReserva: "inserirReserva",
         reservaRecusada: "reservaRecusada",
-        disponivelReserva: "disponivelReserva",
+        mensagemErroAoReservar: "mensagemErroAoReservar",
       }
     )
     .addEdge("classificarPedido", "validarDisponibilidade")
@@ -87,5 +89,6 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addEdge("inserirReserva", END)
     .addEdge("reservaRecusada", END)
     .addEdge("indisponivelReserva", END)
+    .addEdge("mensagemErroAoReservar", END)
 
     .compile();
