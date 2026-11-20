@@ -1,4 +1,4 @@
-import type { ResultSetHeader } from "mysql2";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getDatabasePool } from "../config/database.ts";
 
 interface Reserva {
@@ -224,26 +224,20 @@ export async function removerReserva(id: number): Promise<boolean> {
     return resultado.affectedRows > 0;
 }
 
-export function checkarDisponibilidade(
+export async function checkarDisponibilidade(
     horario: string
-): boolean {
+): Promise<boolean> {
     const horarioSolicitado = normalizarHorarioReserva(horario);
 
     if (!horarioSolicitado) {
         throw new Error(`Não foi possível interpretar o horário: "${horario}".`);
     }
 
-    return !reservas.some((reserva) => {
-        const horarioExistente = normalizarHorarioReserva(reserva.horarioReserva);
- 
-        if (!horarioExistente || horarioExistente.hora !== horarioSolicitado.hora) {
-            return false;
-        }
+    const dataHora = `${horarioSolicitado.data} ${horarioSolicitado.hora}:00`;
+    var query = "SELECT Id FROM Reservas WHERE DataHora = ? LIMIT 1";
+    const [resultado] = await getDatabasePool().execute<RowDataPacket[]>(query, [
+        dataHora
+    ]);
 
-        return (
-            !horarioExistente.data ||
-            !horarioSolicitado.data ||
-            horarioExistente.data === horarioSolicitado.data
-        );
-    });
+    return resultado.length === 0;
 }
