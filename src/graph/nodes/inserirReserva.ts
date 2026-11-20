@@ -12,7 +12,7 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
 
     try {
         // Simular a inserção da reserva
-        adicionarReserva({
+        const reserva = await adicionarReserva({
             nomeReservante: state.nomeReservado!,
             horarioReserva: state.dataHora!,
             numeroPessoas: state.qtdePessoas!,
@@ -22,7 +22,7 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
             sucesso: true,
             messages: [
                 ...state.messages,
-                new AIMessage('Reserva enviada com sucesso! Agradecemos por escolher nosso restaurante e esperamos vê-lo em breve.')
+                new AIMessage('Reserva enviada com sucesso! Agradecemos por escolher nosso restaurante e esperamos vê-lo em breve. Para cancelar a reserva, envie o pedido com o ID de registro ' + reserva.id)
             ],
         } 
     } catch (error) {

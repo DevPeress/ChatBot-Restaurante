@@ -182,7 +182,7 @@ function normalizarHorarioReserva(valor: string): HorarioNormalizado | undefined
     return data ? { data, hora } : { hora };
 }
 
-export function adicionarReserva(reserva: Omit<Reserva, "id">): Reserva {
+export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Reserva> {
     const novaReserva: Reserva = {
         id: reservas.length + 1,
         ...reserva,
@@ -201,8 +201,7 @@ export function removerReserva(id: number): boolean {
 }
 
 export function checkarDisponibilidade(
-    horario: string,
-    _numeroPessoas: number
+    horario: string
 ): boolean {
     const horarioSolicitado = normalizarHorarioReserva(horario);
 
