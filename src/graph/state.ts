@@ -12,7 +12,7 @@ export const RestauranteData = z.object({
     idReserva: z.number().int().positive().optional(),
     sucesso: z.boolean().optional(),
     erro: z.string().optional(),
-    safeGuard: z.boolean().optional()
+    safe: z.boolean().optional()
 });
 
 export type RestauranteState =
