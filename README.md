@@ -37,7 +37,7 @@ ao cliente e permite cadastrar ou cancelar reservas em memória.
 
 ## Foto do LangSmith
 
-![Preview do LangSmith](./src/img/projeto.png)
+![Preview do LangSmith](./src/img/ProjetoV2.png)
 
 ## Configuração
 
