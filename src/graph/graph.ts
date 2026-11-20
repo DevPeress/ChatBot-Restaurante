@@ -12,8 +12,10 @@ import { reservaRecusada } from "./nodes/reservaRecusada.ts";
 import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
 import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarReserva.ts";
+import { safeGuard } from "./nodes/safeGuard.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
+    .addNode("safeGuard", safeGuard)
     .addNode("validarDadosReserva", validarDadosReserva)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
