@@ -1,5 +1,4 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
-import { classificarPedido } from "./nodes/classificacaoPedido.ts";
 import { validarDisponibilidade } from "./nodes/validarDisponibilidade.ts";
 import { indisponivelReserva } from "./nodes/indisponivelReserva.ts";
 import { RestauranteData, type RestauranteState } from "./state.ts";
@@ -16,7 +15,6 @@ import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarRe
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("validarDadosReserva", validarDadosReserva)
-    .addNode("classificarPedido", classificarPedido)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
     .addNode("disponivelReserva", disponivelReserva)
@@ -43,21 +41,10 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
       }
     )
     .addConditionalEdges(
-      "validarDadosReserva",
-      (state: RestauranteState): string =>
-        state.sucesso ? "classificarPedido" : END,
-      {
-        classificarPedido: "classificarPedido",
-        [END]: END,
-      }
-    )
-    .addConditionalEdges(
       'validarDisponibilidade',
       (state: RestauranteState): string => {
         if (
           state.erro ||
-          !state.classificacaoDoPedido ||
-          state.classificacaoDoPedido === 'Desconhecido' ||
           !state.sucesso
         ) {
           return 'indisponivelReserva';
@@ -89,7 +76,6 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         mensagemErroAoReservar: "mensagemErroAoReservar",
       }
     )
-    .addEdge("classificarPedido", "validarDisponibilidade")
     .addEdge("disponivelReserva", END)
     .addEdge("inserirReserva", END)
     .addEdge("reservaRecusada", END)
