@@ -7,6 +7,7 @@ Um projeto de chatbot para restaurante desenvolvido com Node.js e LangChain.
 - LangChain
 - LangChain Core
 - OpenRouter
+- Fastify
 - TypeScript
 - tsx
 
@@ -36,3 +37,22 @@ npm install -D typescript tsx @types/node
 2. Criar a integracao do chatbot com o OpenRouter.
 3. Implementar o fluxo de atendimento do restaurante.
 4. Executar e testar as conversas.
+
+## API
+
+Execute o servidor com `npm run dev`. A rota `POST /chat` aceita os dados da
+reserva e a mensagem atual. Para continuar uma conversa, envie de volta o
+histórico `messages` e os campos de estado retornados pela rota.
+
+```json
+{
+  "message": "Quero reservar uma mesa",
+  "nomeReservado": "Ana",
+  "qtdePessoas": 2,
+  "dataHora": "2026-11-20T19:00:00"
+}
+```
+
+As mensagens do histórico usam `{ "role": "human" | "ai", "content": "..." }`.
+O servidor escuta em `127.0.0.1:3000` por padrão; `HOST` e `PORT` podem ser
+definidos por variáveis de ambiente.
