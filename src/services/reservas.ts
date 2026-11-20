@@ -184,7 +184,9 @@ function normalizarHorarioReserva(valor: string): HorarioNormalizado | undefined
 
 export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Reserva> {
     const novaReserva: Reserva = {
-        id: reservas.length + 1,
+        id: reservas.reduce((maiorId, item) =>
+            Math.max(maiorId, item.id), 0
+        ) + 1,
         ...reserva,
     };
     reservas.push(novaReserva);
