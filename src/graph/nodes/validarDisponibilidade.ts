@@ -1,11 +1,21 @@
 import type { RestauranteState } from "../state.ts";
+import { checkarDisponibilidade } from "../../services/reservas.ts";
 
 export async function validarDisponibilidade(state: RestauranteState): Promise<Partial<RestauranteState>> {
     try {
-        // validação no banco
+        if (!state.nomeReservado || !state.dataHora || !state.qtdePessoas) {
+            return {
+                sucesso: false,
+                erro: "Nome, quantidade de pessoas e horário são obrigatórios para verificar a disponibilidade.",
+            };
+        }
 
         return {
-            sucesso: true
+            sucesso: checkarDisponibilidade(
+                state.dataHora,
+                state.qtdePessoas
+            ),
+            erro: undefined,
         }
     } catch (error) {
         console.error("Erro ao validar disponibilidade:", error);
