@@ -1,4 +1,4 @@
-# ChatBot-Restaurante
+# ChatBot-Restaurante v2
 
 API de chatbot para atendimento e reservas de restaurante, desenvolvida em
 Node.js com Fastify, TypeScript, LangGraph e LangChain/OpenRouter.
@@ -37,7 +37,7 @@ ao cliente e permite cadastrar ou cancelar reservas em memória.
 
 ## Foto do LangSmith
 
-![Preview do LangSmith](./src/img/projeto.png)
+![Preview do LangSmith](./src/img/ProjetoV2.png)
 
 ## Configuração
 

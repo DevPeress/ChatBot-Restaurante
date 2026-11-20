@@ -12,8 +12,10 @@ import { reservaRecusada } from "./nodes/reservaRecusada.ts";
 import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
 import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarReserva.ts";
+import { safeGuard } from "./nodes/safeGuard.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
+    .addNode("safeGuard", safeGuard)
     .addNode("validarDadosReserva", validarDadosReserva)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
@@ -24,17 +26,29 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("mensagemErroAoReservar", mensagemErroAoReservar)
     .addNode("cancelarReserva", cancelarReserva)
 
+    .addEdge(START, "safeGuard")
+
     .addConditionalEdges(
-      START,
-      (state: RestauranteState): string =>
-        solicitaCancelamentoReserva(state.messages)
-          ? "cancelarReserva"
-          : state.confirmacaoReserva === "aguardando" ||
-        (!state.confirmacaoReserva &&
-          ultimaRespostaSeguePedidoDeConfirmacao(state.messages))
-          ? "avaliarConfirmacaoReserva"
-          : "validarDadosReserva",
+      "safeGuard",
+      (state: RestauranteState) => {
+        if (state.safe !== true) return "bloqueado";
+
+        if (solicitaCancelamentoReserva(state.messages)) {
+          return "cancelarReserva";
+        }
+
+        if (
+          state.confirmacaoReserva === "aguardando" ||
+          (!state.confirmacaoReserva &&
+            ultimaRespostaSeguePedidoDeConfirmacao(state.messages))
+        ) {
+          return "avaliarConfirmacaoReserva";
+        }
+
+        return "validarDadosReserva";
+      },
       {
+        bloqueado: END,
         cancelarReserva: "cancelarReserva",
         avaliarConfirmacaoReserva: "avaliarConfirmacaoReserva",
         validarDadosReserva: "validarDadosReserva",

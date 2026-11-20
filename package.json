@@ -1,6 +1,6 @@
 {
   "name": "Chat Bot de Restaurante",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Um projeto de chatbot para restaurante desenvolvido com Node.js e LangChain.",
   "main": "index.js",
   "scripts": {
