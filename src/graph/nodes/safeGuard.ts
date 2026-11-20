@@ -33,8 +33,11 @@ export async function safeGuard(
             };
         }
 
-        const safeGuard = validar.text.includes("INSEGURO") ?? validar.text.includes("INSEGURA") ?? false
-        if (safeGuard)
+        const isUnsafe =
+            validar.text.includes("INSEGURO") ||
+            validar.text.includes("INSEGURA");
+            
+        if (isUnsafe)
         {
             return {
                 safe: false,
