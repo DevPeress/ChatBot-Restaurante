@@ -6,13 +6,7 @@ export async function safeGuard(
     state: RestauranteState
 ) : Promise<Partial<RestauranteState>> {
     try {
-        const mensagensDoUsuario = state.messages
-        .filter((message) => message.getType() === "human")
-        .map((message) =>
-            typeof message.content === "string"
-                ? message.content
-                : JSON.stringify(message.content) ?? ""
-        );
+        const mensagensDoUsuario = state.messages.at(-1)?.text;
 
         const validar = await model.invoke(`
             Quero que valide a mensagem como um usuário qualquer sem permissão geral de um sistema, ao banco de dados ou qualquer informação além de reservar ou cancelar uma reserva.
@@ -36,7 +30,7 @@ export async function safeGuard(
         const isUnsafe =
             validar.text.includes("INSEGURO") ||
             validar.text.includes("INSEGURA");
-            
+
         if (isUnsafe)
         {
             return {
