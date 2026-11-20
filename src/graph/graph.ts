@@ -97,6 +97,5 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addEdge("indisponivelReserva", END)
     .addEdge("mensagemErroAoReservar", END)
     .addEdge("cancelarReserva", END)
-    .addEdge("safeGuard", END)
 
     .compile();
