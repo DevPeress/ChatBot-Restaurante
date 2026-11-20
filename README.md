@@ -1,4 +1,4 @@
-# ChatBot-Restaurante
+# ChatBot-Restaurante v2
 
 API de chatbot para atendimento e reservas de restaurante, desenvolvida em
 Node.js com Fastify, TypeScript, LangGraph e LangChain/OpenRouter.
