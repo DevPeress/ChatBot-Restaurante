@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS Reservas (
+    Id INT NOT NULL AUTO_INCREMENT,
+    NomeReservado VARCHAR(255) NOT NULL,
+    QtdDePessoas INT NOT NULL,
+    DataHora DATETIME NOT NULL,
+    PRIMARY KEY (Id)
+);
