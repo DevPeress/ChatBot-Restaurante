@@ -10,7 +10,6 @@ ao cliente e permite cadastrar ou cancelar reservas em memória.
 
 - Extração de nome, quantidade de pessoas e horário a partir da conversa.
 - Solicitação dos dados que ainda não foram informados.
-- Classificação do pedido como **Alta**, **Média** ou **Baixa**.
 - Verificação de conflito de horário.
 - Confirmação explícita antes da criação da reserva.
 - Cancelamento de reserva pelo ID de registro.
@@ -117,7 +116,6 @@ Campos opcionais usados para continuar o estado da conversa:
 | `nomeReservado` | string | Nome informado para a reserva |
 | `qtdePessoas` | integer | Quantidade de pessoas |
 | `dataHora` | string | Data ou descrição de horário informada pelo usuário |
-| `classificacaoDoPedido` | string | `Alta`, `Média`, `Baixa` ou `Desconhecido` |
 | `confirmacaoReserva` | string | `aguardando`, `confirmada` ou `recusada` |
 | `idReserva` | integer | ID usado no cancelamento |
 | `sucesso` | boolean | Resultado da última etapa do fluxo |
@@ -193,10 +191,9 @@ estados:
 1. Detecta um pedido de cancelamento.
 2. Avalia uma resposta de confirmação pendente.
 3. Valida nome, quantidade de pessoas e horário.
-4. Classifica a prioridade do pedido.
-5. Verifica a disponibilidade.
-6. Pede confirmação ao cliente.
-7. Cria ou recusa a reserva conforme a resposta.
+4. Verifica a disponibilidade.
+5. Pede confirmação ao cliente.
+6. Cria ou recusa a reserva conforme a resposta.
 
 A implementação do grafo está em
 [`src/graph/graph.ts`](src/graph/graph.ts).
