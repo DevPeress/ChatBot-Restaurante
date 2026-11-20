@@ -1,7 +1,6 @@
 interface Reserva {
     id: number;
     nomeReservante: string;
-    dataReserva: string;
     horarioReserva: string;
     numeroPessoas: number;
 }
@@ -15,4 +14,13 @@ export function adicionarReserva(reserva: Omit<Reserva, "id">): Reserva {
     };
     reservas.push(novaReserva);
     return novaReserva;
+}
+
+export function removerReserva(id: number): boolean {
+    const index = reservas.findIndex((r) => r.id === id);
+    if (index !== -1) {
+        reservas.splice(index, 1);
+        return true;
+    }
+    return false;
 }
