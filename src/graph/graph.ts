@@ -26,9 +26,12 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("mensagemErroAoReservar", mensagemErroAoReservar)
     .addNode("cancelarReserva", cancelarReserva)
 
+    .addEdge(START, "safeGuard")
+
     .addConditionalEdges(
-      START,
+      "safeGuard",
       (state: RestauranteState): string =>
+        !state.safe ? END :
         solicitaCancelamentoReserva(state.messages)
           ? "cancelarReserva"
           : state.confirmacaoReserva === "aguardando" ||
@@ -85,5 +88,6 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addEdge("indisponivelReserva", END)
     .addEdge("mensagemErroAoReservar", END)
     .addEdge("cancelarReserva", END)
+    .addEdge("safeGuard", END)
 
     .compile();
