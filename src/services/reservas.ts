@@ -1,3 +1,6 @@
+import type { ResultSetHeader } from "mysql2";
+import { getDatabasePool } from "../config/database.ts";
+
 interface Reserva {
     id: number;
     nomeReservante: string;
@@ -183,23 +186,42 @@ function normalizarHorarioReserva(valor: string): HorarioNormalizado | undefined
 }
 
 export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Reserva> {
+    const query = `
+        INSERT INTO Reservas (NomeReservado, QtdDePessoas, DataHora)
+        VALUES (?, ?, ?)
+    `;
+
+    const horaFormatada = normalizarHorarioReserva(reserva.horarioReserva);
+    if (!horaFormatada?.data) {
+        throw new Error(
+            `Não foi possível interpretar a data e o horário da reserva: "${reserva.horarioReserva}".`
+        );
+    }
+
+    const dataHora = `${horaFormatada.data} ${horaFormatada.hora}:00`;
+    const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
+        reserva.nomeReservante,
+        reserva.numeroPessoas,
+        dataHora,
+    ]);
+
     const novaReserva: Reserva = {
-        id: reservas.reduce((maiorId, item) =>
-            Math.max(maiorId, item.id), 0
-        ) + 1,
-        ...reserva,
+        id: resultado.insertId,
+        ...reserva
     };
-    reservas.push(novaReserva);
+
     return novaReserva;
 }
 
-export function removerReserva(id: number): boolean {
-    const index = reservas.findIndex((r) => r.id === id);
-    if (index !== -1) {
-        reservas.splice(index, 1);
-        return true;
-    }
-    return false;
+export async function removerReserva(id: number): Promise<boolean> {
+    const query = `
+        DELETE FROM Reservas WHERE Id = ?
+    `;
+    const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
+        id
+    ]);
+
+    return resultado.affectedRows > 0;
 }
 
 export function checkarDisponibilidade(
@@ -213,7 +235,7 @@ export function checkarDisponibilidade(
 
     return !reservas.some((reserva) => {
         const horarioExistente = normalizarHorarioReserva(reserva.horarioReserva);
-
+ 
         if (!horarioExistente || horarioExistente.hora !== horarioSolicitado.hora) {
             return false;
         }
