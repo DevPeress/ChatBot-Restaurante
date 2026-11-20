@@ -1,63 +1,230 @@
 # ChatBot-Restaurante
 
-Um projeto de chatbot para restaurante desenvolvido com Node.js e LangChain.
+API de chatbot para atendimento e reservas de restaurante, desenvolvida em
+Node.js com Fastify, TypeScript, LangGraph e LangChain/OpenRouter.
+
+O projeto coleta os dados da reserva, valida disponibilidade, pede confirmação
+ao cliente e permite cadastrar ou cancelar reservas em memória.
+
+## Funcionalidades
+
+- Extração de nome, quantidade de pessoas e horário a partir da conversa.
+- Solicitação dos dados que ainda não foram informados.
+- Classificação do pedido como **Alta**, **Média** ou **Baixa**.
+- Verificação de conflito de horário.
+- Confirmação explícita antes da criação da reserva.
+- Cancelamento de reserva pelo ID de registro.
+- Manutenção do histórico e dos dados da conversa entre as requisições da API.
+
+> As reservas são armazenadas em memória. Reiniciar o servidor remove todas as
+> reservas cadastradas.
 
 ## Tecnologias
 
-- LangChain
-- LangChain Core
-- OpenRouter
-- Fastify
+- Node.js
 - TypeScript
+- Fastify
+- LangGraph
+- LangChain
+- OpenRouter
+- Zod
 - tsx
 
-## Dependencias
+## Pré-requisitos
 
-Instale as bibliotecas do LangChain:
-
-```bash
-npm install langchain @langchain/core @langchain/openrouter
-```
-
-Instale as ferramentas de desenvolvimento:
-
-```bash
-npm install -D typescript tsx @types/node
-```
-
-## Requisitos
-
-- Node.js
+- Node.js 20 ou superior
 - npm
-- Uma chave de API do OpenRouter
+- Chave de API da OpenRouter
 
-## Proximos passos
+## Configuração
 
-1. Configurar as variaveis de ambiente.
-2. Criar a integracao do chatbot com o OpenRouter.
-3. Implementar o fluxo de atendimento do restaurante.
-4. Executar e testar as conversas.
+1. Instale as dependências:
+
+```bash
+npm install
+```
+
+2. Crie o arquivo de ambiente a partir do modelo:
+
+```bash
+cp .env.example .env
+```
+
+No Windows, caso o comando `cp` não esteja disponível, copie manualmente o
+arquivo `.env.example` para `.env`.
+
+3. Configure as variáveis em `.env`:
+
+```dotenv
+OPENROUTER_API_KEY=sua-chave
+
+# Variáveis opcionais para observabilidade no LangSmith
+LANGSMITH_API_KEY=sua-chave-langsmith
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_PROJECT=ChatBot-Restaurante
+```
+
+As variáveis `LANGSMITH_API_KEY`, `LANGCHAIN_TRACING_V2` e
+`LANGCHAIN_PROJECT` são opcionais.
+
+## Executando o projeto
+
+### API Fastify
+
+```bash
+npm run dev
+```
+
+Por padrão, o servidor fica disponível em `http://127.0.0.1:3000`.
+
+O host e a porta podem ser alterados:
+
+```dotenv
+HOST=0.0.0.0
+PORT=3000
+```
+
+### LangGraph local
+
+```bash
+npm run langgraph:serve
+```
+
+O grafo configurado em `langgraph.json` é identificado como `restaurante`.
 
 ## API
 
-Execute o servidor com `npm run dev`. A rota `POST /chat` aceita os dados da
-reserva e a mensagem atual. Para continuar uma conversa, envie de volta o
-histórico `messages` e os campos de estado retornados pela rota.
+### Criar ou continuar uma conversa
 
-O fluxo usa o modelo para identificar o nome da pessoa, a quantidade de
-pessoas e o horário desejado nas mensagens do usuário. Os três dados são
-obrigatórios; se algum estiver faltando, o bot informa o que precisa antes de
-continuar com a reserva.
+```http
+POST /chat
+Content-Type: application/json
+```
+
+Corpo da requisição:
 
 ```json
 {
-  "message": "Quero reservar uma mesa",
-  "nomeReservado": "Ana",
-  "qtdePessoas": 2,
-  "dataHora": "2026-11-20T19:00:00"
+  "message": "Quero reservar uma mesa para 4 pessoas às 19h"
 }
 ```
 
-As mensagens do histórico usam `{ "role": "human" | "ai", "content": "..." }`.
-O servidor escuta em `127.0.0.1:3000` por padrão; `HOST` e `PORT` podem ser
-definidos por variáveis de ambiente.
+Campos opcionais usados para continuar o estado da conversa:
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `messages` | array | Histórico convertido em mensagens human/AI |
+| `nomeReservado` | string | Nome informado para a reserva |
+| `qtdePessoas` | integer | Quantidade de pessoas |
+| `dataHora` | string | Data ou descrição de horário informada pelo usuário |
+| `classificacaoDoPedido` | string | `Alta`, `Média`, `Baixa` ou `Desconhecido` |
+| `confirmacaoReserva` | string | `aguardando`, `confirmada` ou `recusada` |
+| `idReserva` | integer | ID usado no cancelamento |
+| `sucesso` | boolean | Resultado da última etapa do fluxo |
+| `erro` | string | Mensagem de erro da última etapa |
+
+Para continuar uma conversa, envie o campo `messages` e os campos de estado
+retornados pela resposta anterior junto com a nova `message`.
+
+Exemplo de histórico:
+
+```json
+{
+  "role": "human",
+  "content": "Meu nome é Ana"
+}
+```
+
+Mensagens válidas possuem `role` igual a `human` ou `ai`.
+
+### Exemplo de reserva
+
+Primeira mensagem:
+
+```bash
+curl -X POST http://127.0.0.1:3000/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\":\"Meu nome é Ana. Quero uma mesa para 2 pessoas às 19h hoje.\"}"
+```
+
+Se o horário estiver disponível, o assistente retorna a pergunta:
+
+```text
+Reserva disponível! Deseja confirmar a reserva? Responda sim ou não.
+```
+
+Confirme explicitamente em outra requisição:
+
+```json
+{
+  "message": "Sim",
+  "nomeReservado": "Ana",
+  "qtdePessoas": 2,
+  "dataHora": "19h hoje",
+  "messages": [],
+  "confirmacaoReserva": "aguardando"
+}
+```
+
+É necessário reutilizar o `messages` retornado pela resposta anterior. O
+campo `messages` vazio no exemplo foi mantido apenas para ilustrar o formato.
+
+Após a confirmação, o assistente cria a reserva em memória e retorna o ID de
+registro para possível cancelamento.
+
+### Cancelamento
+
+Envie o pedido de cancelamento junto com o ID da reserva:
+
+```bash
+curl -X POST http://127.0.0.1:3000/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\":\"Cancelar reserva 1\",\"idReserva\":1}"
+```
+
+O ID também pode ser informado na mensagem, por exemplo:
+`Cancelar reserva ID 1`.
+
+## Fluxo do LangGraph
+
+O grafo inicia a partir da mensagem do usuário e pode seguir pelos seguintes
+estados:
+
+1. Detecta um pedido de cancelamento.
+2. Avalia uma resposta de confirmação pendente.
+3. Valida nome, quantidade de pessoas e horário.
+4. Classifica a prioridade do pedido.
+5. Verifica a disponibilidade.
+6. Pede confirmação ao cliente.
+7. Cria ou recusa a reserva conforme a resposta.
+
+A implementação do grafo está em
+[`src/graph/graph.ts`](src/graph/graph.ts).
+
+## Estrutura do projeto
+
+```text
+src/
+├── index.ts                 # Inicialização do servidor Fastify
+├── config/model.ts          # Configuração do modelo OpenRouter
+├── routes/chat.ts           # Rota POST /chat
+├── graph/
+│   ├── graph.ts             # Grafo e transições LangGraph
+│   ├── state.ts             # Estado e validação Zod
+│   └── nodes/               # Etapas do fluxo de atendimento
+└── services/reservas.ts     # Armazenamento e disponibilidade em memória
+```
+
+## Validação
+
+Não há scripts de teste ou build definidos no `package.json`. Para verificar a
+tipagem do projeto:
+
+```bash
+npx tsc --noEmit
+```
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo
+[`LICENSE`](LICENSE).
