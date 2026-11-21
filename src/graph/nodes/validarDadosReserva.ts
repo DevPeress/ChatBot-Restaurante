@@ -49,8 +49,14 @@ export async function validarDadosReserva(
 
     const messages = [
         new SystemMessage(getValidarDados()),
-        new HumanMessage(JSON.stringify(mensagensDoUsuario))
-    ]
+        new HumanMessage(`
+            Histórico de mensagens do usuário:
+
+            ${mensagensDoUsuario
+                .map((mensagem, index) => `${index + 1}. ${mensagem}`)
+                .join("\n")}
+        `)
+    ];
     const dadosExtraidos = await modeloValidacao.invoke(messages);
 
     const nomeExtraido =
