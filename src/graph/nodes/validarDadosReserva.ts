@@ -100,7 +100,7 @@ export async function validarDadosReserva(
     }
 
     if (!dataHora) {
-        pendencias.push("horário desejado");
+        pendencias.push("data e horário desejado");
     }
 
     if (!qtdePessoas) {
