@@ -95,25 +95,40 @@ export async function cancelarReserva(
         };
     }
 
-    if (await removerReserva(idReserva)) {
+    try {
+        const remover = await removerReserva(idReserva)
+        if (remover) {
+            return {
+                sucesso: true,
+                idReserva: undefined,
+                confirmacaoReserva: "recusada",
+                erro: undefined,
+                messages: [
+                    ...state.messages,
+                    new AIMessage(Mensagens(MensagensType.ReservaCancelada)),
+                ],
+            };
+        } else {
+            return {
+                sucesso: false,
+                erro: `Não foi encontrada uma reserva com o ID ${idReserva}.`,
+                messages: [
+                    ...state.messages,
+                    new AIMessage(Mensagens(MensagensType.NaoEncontradaId)),
+                ],
+            };
+        }
+    } catch (error){
+        console.error("Erro ao cancelar a reserva:", error);
+
         return {
-            sucesso: true,
-            idReserva: undefined,
-            confirmacaoReserva: "recusada",
-            erro: undefined,
+            sucesso: false,
+            erro: "Erro ao cancelar a reserva: " +
+                (error as Error).message,
             messages: [
                 ...state.messages,
-                new AIMessage(Mensagens(MensagensType.ReservaCancelada)),
+                new AIMessage(Mensagens(MensagensType.Erro)),
             ],
         };
     }
-
-    return {
-        sucesso: false,
-        erro: `Não foi encontrada uma reserva com o ID ${idReserva}.`,
-        messages: [
-            ...state.messages,
-            new AIMessage(Mensagens(MensagensType.NaoEncontradaId)),
-        ],
-    };
 }
