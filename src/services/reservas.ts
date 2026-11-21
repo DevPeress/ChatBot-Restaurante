@@ -251,7 +251,7 @@ export async function checkarReservas(
         return []
 
     var query = "SELECT Id, QtdDePessoas, DataHora FROM Reservas WHERE NomeReservado = ?";
-    const [resultado] = await getDatabasePool().execute<DadosListagemSchema[]>(query, [
+    const [resultado] = await getDatabasePool().execute<dadosReservasSchema[]>(query, [
         nome
     ]);
 
