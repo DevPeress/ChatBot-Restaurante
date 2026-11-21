@@ -8,7 +8,8 @@ export enum MensagensType {
     "NaoEntendido Reserva",
     "InformarId",
     "ReservaCancelada",
-    "NaoEncontradaId"
+    "NaoEncontradaId",
+    "Erro"
 }
 
 export const Mensagens = (tipo: MensagensType) => {
@@ -42,5 +43,8 @@ export const Mensagens = (tipo: MensagensType) => {
 
         case MensagensType.NaoEncontradaId:
             return "Desculpe, não consegui localizar sua reserva."
+
+        case MensagensType.Erro:
+            return "Erro inesperado, tente novamente!"
     }
 }
