@@ -13,6 +13,8 @@ import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
 import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarReserva.ts";
 import { safeGuard } from "./nodes/safeGuard.ts";
+import { requisicaoNome } from "./nodes/requisicaoNome.ts";
+import { solicitaListagem, validarDadosListagem } from "./nodes/dadosListagem.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("safeGuard", safeGuard)
@@ -25,6 +27,8 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("reservaRecusada", reservaRecusada)
     .addNode("mensagemErroAoReservar", mensagemErroAoReservar)
     .addNode("cancelarReserva", cancelarReserva)
+    .addNode("requisicaoNome", requisicaoNome)
+    .addNode("validarDadosListagem", validarDadosListagem)
 
     .addEdge(START, "safeGuard")
 
@@ -33,9 +37,16 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
       (state: RestauranteState) => {
         if (state.safe !== true) return "bloqueado";
 
-        if (solicitaCancelamentoReserva(state.messages)) {
+        if (solicitaCancelamentoReserva(state.messages))
           return "cancelarReserva";
-        }
+
+
+        if (solicitaListagem(state.messages))
+          return "requisicaoNome";
+
+
+        if (state.confirmacaoReserva === "listagem")
+          return "validarDadosListagem"
 
         if (
           state.confirmacaoReserva === "aguardando" ||
@@ -52,6 +63,8 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         cancelarReserva: "cancelarReserva",
         avaliarConfirmacaoReserva: "avaliarConfirmacaoReserva",
         validarDadosReserva: "validarDadosReserva",
+        requisicaoNome: "requisicaoNome",
+        validarDadosListagem: "validarDadosListagem"
       }
     )
     .addConditionalEdges(
@@ -110,5 +123,7 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addEdge("indisponivelReserva", END)
     .addEdge("mensagemErroAoReservar", END)
     .addEdge("cancelarReserva", END)
+    .addEdge("requisicaoNome", END)
+    .addEdge("validarDadosListagem", END)
 
     .compile();
