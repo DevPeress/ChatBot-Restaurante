@@ -1,5 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getDatabasePool } from "../config/database.ts";
+import type { DadosListagemSchema } from "../graph/nodes/dadosListagem.ts";
 
 interface Reserva {
     id: number;
@@ -238,4 +239,18 @@ export async function checkarDisponibilidade(
     ]);
 
     return resultado.length === 0;
+}
+
+export async function checkarReservas(
+    nome: string
+): Promise<DadosListagemSchema[]> {
+    if (!nome || nome == "")
+        return []
+
+    var query = "SELECT Id, QtdDePessoas, DataHora FROM Reservas WHERE NomeReservado = ?";
+    const [resultado] = await getDatabasePool().execute<DadosListagemSchema[]>(query, [
+        nome
+    ]);
+
+    return resultado;
 }
