@@ -96,7 +96,7 @@ export async function cancelarReserva(
         };
     }
 
-    if (removerReserva(idReserva)) {
+    if (await removerReserva(idReserva)) {
         return {
             sucesso: true,
             idReserva: undefined,

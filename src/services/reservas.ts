@@ -1,3 +1,6 @@
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
+import { getDatabasePool } from "../config/database.ts";
+
 interface Reserva {
     id: number;
     nomeReservante: string;
@@ -9,8 +12,6 @@ interface HorarioNormalizado {
     data?: string;
     hora: string;
 }
-
-let reservas: Reserva[] = [];
 
 const meses: Record<string, number> = {
     janeiro: 1,
@@ -183,45 +184,58 @@ function normalizarHorarioReserva(valor: string): HorarioNormalizado | undefined
 }
 
 export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Reserva> {
+    const query = `
+        INSERT INTO Reservas (NomeReservado, QtdDePessoas, DataHora)
+        VALUES (?, ?, ?)
+    `;
+
+    const horaFormatada = normalizarHorarioReserva(reserva.horarioReserva);
+    if (!horaFormatada?.data) {
+        throw new Error(
+            `Não foi possível interpretar a data e o horário da reserva: "${reserva.horarioReserva}".`
+        );
+    }
+
+    const dataHora = `${horaFormatada.data} ${horaFormatada.hora}:00`;
+    const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
+        reserva.nomeReservante,
+        reserva.numeroPessoas,
+        dataHora,
+    ]);
+
     const novaReserva: Reserva = {
-        id: reservas.reduce((maiorId, item) =>
-            Math.max(maiorId, item.id), 0
-        ) + 1,
-        ...reserva,
+        id: resultado.insertId,
+        ...reserva
     };
-    reservas.push(novaReserva);
+
     return novaReserva;
 }
 
-export function removerReserva(id: number): boolean {
-    const index = reservas.findIndex((r) => r.id === id);
-    if (index !== -1) {
-        reservas.splice(index, 1);
-        return true;
-    }
-    return false;
+export async function removerReserva(id: number): Promise<boolean> {
+    const query = `
+        DELETE FROM Reservas WHERE Id = ?
+    `;
+    const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
+        id
+    ]);
+
+    return resultado.affectedRows > 0;
 }
 
-export function checkarDisponibilidade(
+export async function checkarDisponibilidade(
     horario: string
-): boolean {
+): Promise<boolean> {
     const horarioSolicitado = normalizarHorarioReserva(horario);
 
     if (!horarioSolicitado) {
         throw new Error(`Não foi possível interpretar o horário: "${horario}".`);
     }
 
-    return !reservas.some((reserva) => {
-        const horarioExistente = normalizarHorarioReserva(reserva.horarioReserva);
+    const dataHora = `${horarioSolicitado.data} ${horarioSolicitado.hora}:00`;
+    var query = "SELECT Id FROM Reservas WHERE DataHora = ? LIMIT 1";
+    const [resultado] = await getDatabasePool().execute<RowDataPacket[]>(query, [
+        dataHora
+    ]);
 
-        if (!horarioExistente || horarioExistente.hora !== horarioSolicitado.hora) {
-            return false;
-        }
-
-        return (
-            !horarioExistente.data ||
-            !horarioSolicitado.data ||
-            horarioExistente.data === horarioSolicitado.data
-        );
-    });
+    return resultado.length === 0;
 }

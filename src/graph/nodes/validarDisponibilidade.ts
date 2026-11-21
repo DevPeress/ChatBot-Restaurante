@@ -11,7 +11,7 @@ export async function validarDisponibilidade(state: RestauranteState): Promise<P
         }
 
         return {
-            sucesso: checkarDisponibilidade(
+            sucesso: await checkarDisponibilidade(
                 state.dataHora
             ),
             erro: undefined,
