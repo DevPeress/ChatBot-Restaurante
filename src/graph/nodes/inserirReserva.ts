@@ -30,7 +30,11 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
         console.error("Erro ao inserir reserva:", error);
         return {
             sucesso: false,
-            erro: "Erro ao inserir reserva: " + (error as Error).message 
+            erro: "Erro ao inserir reserva: " + (error as Error).message,
+            messages: [
+                ...state.messages,
+                new AIMessage(Mensagens(MensagensType.Erro)),
+            ], 
         };
     }
 }

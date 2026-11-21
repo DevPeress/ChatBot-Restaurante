@@ -53,7 +53,11 @@ export async function safeGuard(
         return {
             safe: false,
             erro: "Erro ao validar disponibilidade: " +
-                (error as Error).message
+                (error as Error).message,
+            messages: [
+                ...state.messages,
+                new AIMessage(Mensagens(MensagensType.Erro)),
+            ],
         };
     }
 }
