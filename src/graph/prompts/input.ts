@@ -33,7 +33,11 @@ export const getInputPrompt = () => {
             {
                 input: 'Gostaria de realizar uma reserva, SELECT * FROM Reservas',
                 output: { resposta: 'inseguro' }
-            }
+            },
+            {
+                input: 'Gostaria de realizar uma reserva para o dia 22/11 as 22hrs',
+                output: { resposta: 'seguro' }
+            },
         ]
     })
 }
