@@ -258,7 +258,7 @@ As variáveis `LANGSMITH_API_KEY`, `LANGCHAIN_TRACING_V2` e
 `LANGCHAIN_PROJECT` são opcionais e ativam o rastreamento das execuções no
 LangSmith.
 
-![Visualização do LangSmith](src/img/ProjetoV2.png)
+![Visualização do LangSmith](src/img/ProjetoV5.png)
 
 ## Licença
 
