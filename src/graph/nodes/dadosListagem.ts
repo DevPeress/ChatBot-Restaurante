@@ -7,7 +7,6 @@ import type { RowDataPacket } from "mysql2";
 
 const dadosListagem = z.object({
     id: z.number(),
-    nomeReservado: z.string(),
     qtdDePessoas: z.number(),
     dataHora: z.string(),
 });
