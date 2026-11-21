@@ -3,6 +3,7 @@ import { z } from "zod";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
 import { getValidarDados } from "../prompts/validarDados.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 const dadosReservaSchema = z.object({
     nomeReservado: z.string().nullable(),
@@ -114,7 +115,7 @@ export async function validarDadosReserva(
             messages: [
                 ...state.messages,
                 new AIMessage(
-                    `Para continuar com a reserva, são obrigatórios: nome da pessoa, quantidade de pessoas e horário desejado. Ainda preciso de: ${pendencias.join(", ")}.`
+                    `${Mensagens(MensagensType.ValidarDados)} ${pendencias.join(", ")}.`
                 ),
             ],
         };

@@ -1,5 +1,6 @@
 import { AIMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 
 export async function disponivelReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
@@ -10,8 +11,8 @@ export async function disponivelReserva(state: RestauranteState): Promise<Partia
             ...state.messages,
             new AIMessage(
                 state.confirmacaoReserva === "aguardando"
-                    ? "Não entendi sua resposta. Deseja confirmar a reserva? Responda sim ou não."
-                    : "Reserva disponível! Deseja confirmar a reserva? Responda sim ou não."
+                    ? Mensagens(MensagensType["NaoEntendido Reserva"])
+                    : Mensagens(MensagensType["Disponivel Reserva"])
             )
         ],
     } 

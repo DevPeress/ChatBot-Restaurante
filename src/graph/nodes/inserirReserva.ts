@@ -1,6 +1,7 @@
 import { AIMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
 import { adicionarReserva } from "../../services/reservas.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 export async function inserirReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
     if (state.confirmacaoReserva !== "confirmada") {
@@ -22,7 +23,7 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
             sucesso: true,
             messages: [
                 ...state.messages,
-                new AIMessage('Reserva enviada com sucesso! Agradecemos por escolher nosso restaurante e esperamos vê-lo em breve. Para cancelar a reserva, envie o pedido com o ID de registro ' + reserva.id)
+                new AIMessage(Mensagens(MensagensType.InserirReserva) + reserva.id)
             ],
         } 
     } catch (error) {

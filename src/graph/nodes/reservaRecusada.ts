@@ -1,5 +1,6 @@
 import { AIMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 export async function reservaRecusada(
     state: RestauranteState
@@ -9,7 +10,7 @@ export async function reservaRecusada(
         confirmacaoReserva: "recusada",
         messages: [
             ...state.messages,
-            new AIMessage("Tudo bem, não vou confirmar a reserva."),
+            new AIMessage(Mensagens(MensagensType.ReservaRecusada)),
         ],
     };
 }

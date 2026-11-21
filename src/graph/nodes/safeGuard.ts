@@ -2,6 +2,7 @@ import { AIMessage, HumanMessage, SystemMessage } from "langchain";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
 import { getInputPrompt } from "../prompts/input.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 export async function safeGuard(
     state: RestauranteState
@@ -37,9 +38,7 @@ export async function safeGuard(
                 safe: false,
                  messages: [
                     ...state.messages,
-                    new AIMessage(
-                        `Mensagem maliciosa detectada. Esse tipo de mensagem não será executada dentro do sistema!`
-                    ),
+                    new AIMessage(Mensagens(MensagensType.Maliciosa)),
                 ],
                 erro: "Mensagem maliciosa detectada. Esse tipo de mensagem não será executada dentro do sistema!"
             };
