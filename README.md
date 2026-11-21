@@ -36,10 +36,6 @@ ou cancelar reservas.
 - Uma chave de API da OpenRouter
 - Uma instância de MySQL
 
-## Foto do LangSmith
-
-![Preview do LangSmith](./src/img/ProjetoV2.png)
-
 ## Configuração
 
 ### 1. Instalar as dependências
