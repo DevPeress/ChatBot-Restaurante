@@ -14,7 +14,7 @@ import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarReserva.ts";
 import { safeGuard } from "./nodes/safeGuard.ts";
 import { requisicaoNome } from "./nodes/requisicaoNome.ts";
-import { solicitaListagem, validarDadosListagem } from "./nodes/dadosListagemReservas.ts";
+import { solicitaListagemDeReservas, validarDadosListagemReservas } from "./nodes/dadosListagemReservas.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("safeGuard", safeGuard)
@@ -28,7 +28,7 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("mensagemErroAoReservar", mensagemErroAoReservar)
     .addNode("cancelarReserva", cancelarReserva)
     .addNode("requisicaoNome", requisicaoNome)
-    .addNode("validarDadosListagem", validarDadosListagem)
+    .addNode("validarDadosListagem", validarDadosListagemReservas)
 
     .addEdge(START, "safeGuard")
 
@@ -41,7 +41,7 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
           return "cancelarReserva";
 
 
-        if (solicitaListagem(state.messages))
+        if (solicitaListagemDeReservas(state.messages))
           return "requisicaoNome";
 
 
