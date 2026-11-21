@@ -1,5 +1,6 @@
 import { AIMessage } from "langchain";
 import type { RestauranteState } from "../state.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 
 export async function indisponivelReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
@@ -7,8 +8,7 @@ export async function indisponivelReserva(state: RestauranteState): Promise<Part
         sucesso: false,
         messages: [
             ...state.messages,
-            new AIMessage(
-                "Desculpe, não há disponibilidade para a reserva solicitada.")
+            new AIMessage(Mensagens(MensagensType.IndisponivelReserva))
         ],
     } 
 }

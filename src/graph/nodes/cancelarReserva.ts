@@ -1,6 +1,7 @@
 import { AIMessage, type BaseMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
 import { removerReserva } from "../../services/reservas.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 export function solicitaCancelamentoReserva(messages: BaseMessage[]): boolean {
   const ultimaMensagemHumana = [...messages]
@@ -89,36 +90,45 @@ export async function cancelarReserva(
             erro: "Informe o ID de registro da reserva que deseja cancelar.",
             messages: [
                 ...state.messages,
-                new AIMessage(
-                    "Informe o ID de registro da reserva que deseja cancelar."
-                ),
+                new AIMessage(Mensagens(MensagensType.InformarId)),
             ],
         };
     }
 
-    if (await removerReserva(idReserva)) {
+    try {
+        const remover = await removerReserva(idReserva)
+        if (remover) {
+            return {
+                sucesso: true,
+                idReserva: undefined,
+                confirmacaoReserva: "recusada",
+                erro: undefined,
+                messages: [
+                    ...state.messages,
+                    new AIMessage(Mensagens(MensagensType.ReservaCancelada)),
+                ],
+            };
+        } else {
+            return {
+                sucesso: false,
+                erro: `Não foi encontrada uma reserva com o ID ${idReserva}.`,
+                messages: [
+                    ...state.messages,
+                    new AIMessage(Mensagens(MensagensType.NaoEncontradaId)),
+                ],
+            };
+        }
+    } catch (error){
+        console.error("Erro ao cancelar a reserva:", error);
+
         return {
-            sucesso: true,
-            idReserva: undefined,
-            confirmacaoReserva: "recusada",
-            erro: undefined,
+            sucesso: false,
+            erro: "Erro ao cancelar a reserva: " +
+                (error as Error).message,
             messages: [
                 ...state.messages,
-                new AIMessage(
-                    `Reserva com o ID ${idReserva} cancelada com sucesso.`
-                ),
+                new AIMessage(Mensagens(MensagensType.Erro)),
             ],
         };
     }
-
-    return {
-        sucesso: false,
-        erro: `Não foi encontrada uma reserva com o ID ${idReserva}.`,
-        messages: [
-            ...state.messages,
-            new AIMessage(
-                `Não foi encontrada uma reserva com o ID ${idReserva}.`
-            ),
-        ],
-    };
 }

@@ -90,7 +90,20 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         mensagemErroAoReservar: "mensagemErroAoReservar",
       }
     )
-    .addEdge("validarDadosReserva", "validarDisponibilidade")
+    .addConditionalEdges(
+      "validarDadosReserva",
+      (state: RestauranteState): string => {
+        if (!state.sucesso) {
+          return "concluir";
+        }
+
+        return "validarDisponibilidade";
+      },
+      {
+        concluir: END,
+        validarDisponibilidade: "validarDisponibilidade",
+      }
+    )
     .addEdge("disponivelReserva", END)
     .addEdge("inserirReserva", END)
     .addEdge("reservaRecusada", END)

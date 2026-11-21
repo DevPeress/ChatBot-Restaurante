@@ -1,7 +1,9 @@
-import { AIMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
+import { getValidarDados } from "../prompts/validarDados.ts";
+import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 const dadosReservaSchema = z.object({
     nomeReservado: z.string().nullable(),
@@ -45,28 +47,17 @@ export async function validarDadosReserva(
                 : JSON.stringify(message.content) ?? ""
         );
 
-    const dadosExtraidos = await modeloValidacao.invoke(`
-        Você valida os dados necessários para uma reserva de restaurante.
-        Analise somente as mensagens do usuário e os dados estruturados
-        fornecidos abaixo.
-        Extraia apenas informações explicitamente informadas e não infira um
-        dado a partir de outro. Retorne null quando um dado não estiver
-        presente. Para cada valor extraído das mensagens, evidencias deve
-        conter um trecho literal da mensagem que comprove esse valor. Não use
-        mensagens do assistente. Para dataHora, exija um horário explícito
-        (por exemplo, 19h); uma data sem horário não atende ao requisito.
-        Preserve o formato usado pelo usuário.
+    const messages = [
+        new SystemMessage(getValidarDados()),
+        new HumanMessage(`
+            Histórico de mensagens do usuário:
 
-        Dados estruturados da reserva:
-        ${JSON.stringify({
-            nomeReservado: state.nomeReservado,
-            dataHora: state.dataHora,
-            qtdePessoas: state.qtdePessoas,
-        })}
-
-        Mensagens do usuário:
-        ${JSON.stringify(mensagensDoUsuario)}
-    `);
+            ${mensagensDoUsuario
+                .map((mensagem, index) => `${index + 1}. ${mensagem}`)
+                .join("\n")}
+        `)
+    ];
+    const dadosExtraidos = await modeloValidacao.invoke(messages);
 
     const nomeExtraido =
         evidenciaFoiInformada(
@@ -109,7 +100,7 @@ export async function validarDadosReserva(
     }
 
     if (!dataHora) {
-        pendencias.push("horário desejado");
+        pendencias.push("data e horário desejado");
     }
 
     if (!qtdePessoas) {
@@ -130,7 +121,7 @@ export async function validarDadosReserva(
             messages: [
                 ...state.messages,
                 new AIMessage(
-                    `Para continuar com a reserva, são obrigatórios: nome da pessoa, quantidade de pessoas e horário desejado. Ainda preciso de: ${pendencias.join(", ")}.`
+                    `${Mensagens(MensagensType.ValidarDados)} ${pendencias.join(", ")}.`
                 ),
             ],
         };
