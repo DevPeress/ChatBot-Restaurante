@@ -198,8 +198,11 @@ export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Re
     }
 
     const dataHora = `${horaFormatada.data} ${horaFormatada.hora}:00`;
+    const nomeReservante = reserva.nomeReservante
+        .trim()
+        .replace(/^["']|["']$/g, "");
     const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
-        reserva.nomeReservante,
+        nomeReservante,
         reserva.numeroPessoas,
         dataHora,
     ]);
