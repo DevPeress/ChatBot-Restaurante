@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getDatabasePool } from "../config/database.ts";
-import type { DadosListagemSchema } from "../graph/nodes/dadosListagem.ts";
+import type { DadosListagemSchema } from "../graph/nodes/dadosListagemReservas.ts";
 
 interface Reserva {
     id: number;

@@ -5,16 +5,16 @@ import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 import type { RestauranteState } from "../state.ts";
 import type { RowDataPacket } from "mysql2";
 
-const dadosListagem = z.object({
+const dadosReservas = z.object({
     id: z.number(),
     qtdDePessoas: z.number(),
     dataHora: z.string(),
 });
 
 export type DadosListagemSchema =
-    z.infer<typeof dadosListagem> & RowDataPacket;
+    z.infer<typeof dadosReservas> & RowDataPacket;
 
-export function solicitaListagem(messages: BaseMessage[]): boolean {
+export function solicitaListagemDeReservas(messages: BaseMessage[]): boolean {
   const ultimaMensagemHumana = [...messages]
     .reverse()
     .find((message) => message.getType() === "human");
@@ -35,7 +35,7 @@ export function solicitaListagem(messages: BaseMessage[]): boolean {
   return /\b(lista|minhas reservas|meu nome|checkar)\b/.test(normalizado);
 }
 
-export async function validarDadosListagem(
+export async function validarDadosListagemReservas(
     state: RestauranteState
 ): Promise<Partial<RestauranteState>> {
     try {
