@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getDatabasePool } from "../config/database.ts";
-import type { DadosListagemSchema } from "../graph/nodes/dadosListagemReservas.ts";
+import type { dadosReservasSchema } from "../graph/nodes/dadosListagemReservas.ts";
 
 interface Reserva {
     id: number;
@@ -246,7 +246,7 @@ export async function checkarDisponibilidade(
 
 export async function checkarReservas(
     nome: string
-): Promise<DadosListagemSchema[]> {
+): Promise<dadosReservasSchema[]> {
     if (!nome || nome == "")
         return []
 

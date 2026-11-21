@@ -11,7 +11,7 @@ const dadosReservas = z.object({
     dataHora: z.string(),
 });
 
-export type DadosListagemSchema =
+export type dadosReservasSchema =
     z.infer<typeof dadosReservas> & RowDataPacket;
 
 export function solicitaListagemDeReservas(messages: BaseMessage[]): boolean {
@@ -41,7 +41,7 @@ export async function validarDadosListagemReservas(
     try {
         const mensagensDoUsuario = state.messages.at(-1)?.text ?? "";
 
-        const reservas: DadosListagemSchema[] = await checkarReservas(mensagensDoUsuario);
+        const reservas: dadosReservasSchema[] = await checkarReservas(mensagensDoUsuario);
         if (reservas.length === 0)
             return {
                 messages: [
@@ -51,7 +51,7 @@ export async function validarDadosListagemReservas(
             };
 
         const reservasFormatadas = reservas
-            .map((reserva: DadosListagemSchema) =>
+            .map((reserva: dadosReservasSchema) =>
                 `Id: ${reserva.id} | Nome: ${mensagensDoUsuario} | Pessoas: ${reserva.qtdDePessoas} | Horário: ${reserva.dataHora}`
             )
             .join("\n");
