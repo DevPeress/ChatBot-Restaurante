@@ -58,7 +58,7 @@ export const getValidarDados = () => {
                 input: 'Meu nome é João, somos 5 pessoas e queremos reservar às 19:30',
                 output: {
                     nomeReservado: 'João',
-                    dataHora: '19:30',
+                    dataHora: 'Hoje as 19:30',
                     qtdePessoas: 5
                 }
             },
@@ -69,7 +69,23 @@ export const getValidarDados = () => {
                     dataHora: '',
                     qtdePessoas: 0
                 }
-            }
+            },
+            {
+                input: 'Me chamo Fabrício Peres e quero uma reserva para o dia 25/11 as 19hrs para duas pessoas',
+                output: {
+                    nomeReservado: 'Fabrício Peres',
+                    dataHora: 'Dia 22/11 as 19hrs',
+                    qtdePessoas: 2
+                }
+            },
+             {
+                input: 'Me chamo Fabrício Peres e quero uma reserva para o dia 25/11 para duas pessoas',
+                output: {
+                    nomeReservado: 'Fabrício Peres',
+                    dataHora: '',
+                    qtdePessoas: 2
+                }
+            },
         ]
     });
 };
