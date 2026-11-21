@@ -48,11 +48,15 @@ export async function safeGuard(
             };
         }
 
-        const isUnsafe =
-            validar.text.includes("INSEGURO") ||
-            validar.text.includes("INSEGURA");
+        const mensagem = validar.text.toLowerCase();
 
-        if (isUnsafe)
+        const isUnsafe =
+            mensagem.includes("inseguro") ||
+            mensagem.includes("insegura");
+
+        const isSafe = mensagem.includes("seguro") || mensagem.includes("segura")
+
+        if (isUnsafe || !isSafe)
         {
             return {
                 safe: false,
