@@ -6,9 +6,9 @@ import type { RestauranteState } from "../state.ts";
 import type { RowDataPacket } from "mysql2";
 
 const dadosReservas = z.object({
-    id: z.number(),
-    qtdDePessoas: z.number(),
-    dataHora: z.string(),
+    Id: z.number(),
+    QtdDePessoas: z.number(),
+    DataHora: z.string(),
 });
 
 export type dadosReservasSchema =
@@ -50,11 +50,11 @@ export async function validarDadosListagemReservas(
                 ],
             };
 
-        const reservasFormatadas = reservas
+       const reservasFormatadas = reservas
             .map((reserva: dadosReservasSchema) =>
-                `Id: ${reserva.id} | Nome: ${mensagensDoUsuario} | Pessoas: ${reserva.qtdDePessoas} | Horário: ${reserva.dataHora}`
+                `ID: ${reserva.Id} | Nome: ${mensagensDoUsuario} | Pessoas: ${reserva.QtdDePessoas} | Horário: ${new Date(reserva.DataHora).toLocaleString("pt-BR")}`
             )
-            .join("\n");
+            .join("\n\n");
 
         return {
             messages: [
