@@ -16,6 +16,7 @@ ou cancelar reservas.
 - Cadastro e cancelamento persistidos no MySQL.
 - Classificação de segurança das mensagens antes do processamento.
 - Continuação de uma conversa por meio do estado enviado pela API.
+- Listagem de Reservas baseada no nome da reserva.
 
 ## Tecnologias
 
@@ -137,7 +138,7 @@ Exemplo:
 | `nomeReservado` | string | Nome informado para a reserva. |
 | `qtdePessoas` | integer | Quantidade de pessoas. |
 | `dataHora` | string | Data e horário informados pelo usuário. |
-| `confirmacaoReserva` | string | Estado: `aguardando`, `confirmada` ou `recusada`. |
+| `confirmacaoReserva` | string | Estado: `aguardando`, `confirmada`, `listagem` ou `recusada`. |
 | `idReserva` | integer | ID usado no cancelamento. |
 | `sucesso` | boolean | Resultado da última etapa do fluxo. |
 | `erro` | string | Mensagem da última etapa com erro. |
@@ -258,7 +259,7 @@ As variáveis `LANGSMITH_API_KEY`, `LANGCHAIN_TRACING_V2` e
 `LANGCHAIN_PROJECT` são opcionais e ativam o rastreamento das execuções no
 LangSmith.
 
-![Visualização do LangSmith](src/img/ProjetoV2.png)
+![Visualização do LangSmith](src/img/ProjetoV5.png)
 
 ## Licença
 

@@ -1,5 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getDatabasePool } from "../config/database.ts";
+import type { dadosReservasSchema } from "../graph/nodes/dadosListagemReservas.ts";
 
 interface Reserva {
     id: number;
@@ -197,8 +198,11 @@ export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Re
     }
 
     const dataHora = `${horaFormatada.data} ${horaFormatada.hora}:00`;
+    const nomeReservante = reserva.nomeReservante
+        .trim()
+        .replace(/^["']|["']$/g, "");
     const [resultado] = await getDatabasePool().execute<ResultSetHeader>(query, [
-        reserva.nomeReservante,
+        nomeReservante,
         reserva.numeroPessoas,
         dataHora,
     ]);
@@ -238,4 +242,18 @@ export async function checkarDisponibilidade(
     ]);
 
     return resultado.length === 0;
+}
+
+export async function checkarReservas(
+    nome: string
+): Promise<dadosReservasSchema[]> {
+    if (!nome || nome == "")
+        return []
+
+    var query = "SELECT Id, QtdDePessoas, DataHora FROM Reservas WHERE NomeReservado = ?";
+    const [resultado] = await getDatabasePool().execute<dadosReservasSchema[]>(query, [
+        nome
+    ]);
+
+    return resultado;
 }

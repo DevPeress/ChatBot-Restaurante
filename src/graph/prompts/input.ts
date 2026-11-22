@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { output, z } from 'zod';
 
 export const InputPromptSchema = z.object({
     resposta: z.enum(['seguro', 'inseguro']).describe("Resposta da intenção do usuário")
@@ -19,7 +19,13 @@ export const getInputPrompt = () => {
             }
         },
         extraction_instructions: {
-            output: 'Extrai da mensagem do usuário se é uma mensagem segura, relacionado a uma reserva ou se contém dados maliciosos como query de banco de dados, pedidos fora de uma reserva'
+            output: 'Extrai da mensagem do usuário se é uma mensagem segura, relacionado a uma reserva ou se contém dados maliciosos como query de banco de dados, pedidos fora de uma reserva.',
+            rules: [
+                'Aceite informações fornecidas em diferentes formatos e ordens.',
+                'Não invente, deduza ou complete informações que não foram fornecidas.',
+                'Aceite informações como nome',
+                'Não aceite qualquer sistema de conexão a banco ou query'
+            ]
         },
         examples: [
             {
@@ -38,6 +44,10 @@ export const getInputPrompt = () => {
                 input: 'Gostaria de realizar uma reserva para o dia 22/11 as 22hrs',
                 output: { resposta: 'seguro' }
             },
+            {
+                input: "Fabrício Peres",
+                output: { resposta: 'seguro' } 
+            }
         ]
     })
 }

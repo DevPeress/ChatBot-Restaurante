@@ -8,7 +8,7 @@ export const RestauranteData = z.object({
     nomeReservado: z.string().optional(),
     qtdePessoas: z.number().optional(),
     dataHora: z.string().optional(),
-    confirmacaoReserva: z.enum(["aguardando", "confirmada", "recusada"]).optional(),
+    confirmacaoReserva: z.enum(["aguardando", "confirmada", "recusada", "listagem"]).optional(),
     idReserva: z.number().int().positive().optional(),
     sucesso: z.boolean().optional(),
     erro: z.string().optional(),
