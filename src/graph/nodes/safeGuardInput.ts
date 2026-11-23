@@ -4,7 +4,7 @@ import type { RestauranteState } from "../state.ts";
 import { getInputPrompt } from "../prompts/input.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
-export async function safeGuard(
+export async function safeGuardInput(
     state: RestauranteState
 ) : Promise<Partial<RestauranteState>> {
     try {
