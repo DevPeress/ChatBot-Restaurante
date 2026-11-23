@@ -1,4 +1,3 @@
-import { AIMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
