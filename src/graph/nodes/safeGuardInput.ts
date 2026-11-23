@@ -1,4 +1,4 @@
-import { AIMessage, HumanMessage, SystemMessage } from "langchain";
+import { HumanMessage, SystemMessage } from "langchain";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
 import { getInputPrompt } from "../prompts/input.ts";
@@ -36,10 +36,7 @@ export async function safeGuardInput(
         {
             return {
                 safe: false,
-                 messages: [
-                    ...state.messages,
-                    new AIMessage(Mensagens(MensagensType.Maliciosa)),
-                ],
+                resposta: Mensagens(MensagensType.Maliciosa),
                 erro: "Mensagem maliciosa detectada. Esse tipo de mensagem não será executada dentro do sistema!"
             };
         }
@@ -54,10 +51,7 @@ export async function safeGuardInput(
             safe: false,
             erro: "Erro ao validar disponibilidade: " +
                 (error as Error).message,
-            messages: [
-                ...state.messages,
-                new AIMessage(Mensagens(MensagensType.Erro)),
-            ],
+            resposta: Mensagens(MensagensType.Erro)
         };
     }
 }
