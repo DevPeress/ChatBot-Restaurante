@@ -1,4 +1,4 @@
-import { AIMessage, type BaseMessage } from "@langchain/core/messages";
+import { type BaseMessage } from "@langchain/core/messages";
 import type { RestauranteState } from "../state.ts";
 import { removerReserva } from "../../services/reservas.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
@@ -88,10 +88,7 @@ export async function cancelarReserva(
         return {
             sucesso: false,
             erro: "Informe o ID de registro da reserva que deseja cancelar.",
-            messages: [
-                ...state.messages,
-                new AIMessage(Mensagens(MensagensType.InformarId)),
-            ],
+            resposta: Mensagens(MensagensType.InformarId)
         };
     }
 
@@ -103,19 +100,13 @@ export async function cancelarReserva(
                 idReserva: undefined,
                 confirmacaoReserva: "recusada",
                 erro: undefined,
-                messages: [
-                    ...state.messages,
-                    new AIMessage(Mensagens(MensagensType.ReservaCancelada)),
-                ],
+                resposta: Mensagens(MensagensType.ReservaCancelada)
             };
         } else {
             return {
                 sucesso: false,
                 erro: `Não foi encontrada uma reserva com o ID ${idReserva}.`,
-                messages: [
-                    ...state.messages,
-                    new AIMessage(Mensagens(MensagensType.NaoEncontradaId)),
-                ],
+                resposta: Mensagens(MensagensType.NaoEncontradaId)
             };
         }
     } catch (error){
@@ -125,10 +116,7 @@ export async function cancelarReserva(
             sucesso: false,
             erro: "Erro ao cancelar a reserva: " +
                 (error as Error).message,
-            messages: [
-                ...state.messages,
-                new AIMessage(Mensagens(MensagensType.Erro)),
-            ],
+            resposta: Mensagens(MensagensType.Erro)
         };
     }
 }
