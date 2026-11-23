@@ -11,7 +11,7 @@ interface ChatRequest {
   nomeReservado?: string;
   qtdePessoas?: number;
   dataHora?: string;
-  confirmacaoReserva?: "aguardando" | "confirmada" | "recusada";
+  confirmacaoReserva?: "aguardando" | "confirmada" | "recusada" | "listagem";
   idReserva?: number;
   sucesso?: boolean;
   erro?: string;
@@ -45,7 +45,7 @@ export const chatRoutes: FastifyPluginAsync = async (fastify) => {
             dataHora: { type: "string" },
             confirmacaoReserva: {
               type: "string",
-              enum: ["aguardando", "confirmada", "recusada"],
+              enum: ["aguardando", "confirmada", "recusada", "listagem"],
             },
             idReserva: { type: "integer", minimum: 1 },
             sucesso: { type: "boolean" },
