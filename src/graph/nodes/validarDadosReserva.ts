@@ -1,4 +1,4 @@
-import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
@@ -118,12 +118,7 @@ export async function validarDadosReserva(
             ...dadosEncontrados,
             sucesso: false,
             erro: undefined,
-            messages: [
-                ...state.messages,
-                new AIMessage(
-                    `${Mensagens(MensagensType.ValidarDados)} ${pendencias.join(", ")}.`
-                ),
-            ],
+            resposta: `${Mensagens(MensagensType.ValidarDados)} ${pendencias.join(", ")}.`
         };
     }
 
