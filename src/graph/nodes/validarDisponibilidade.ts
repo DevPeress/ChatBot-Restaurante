@@ -1,6 +1,5 @@
 import type { RestauranteState } from "../state.ts";
 import { checkarDisponibilidade } from "../../services/reservas.ts";
-import { AIMessage } from "langchain";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
 export async function validarDisponibilidade(state: RestauranteState): Promise<Partial<RestauranteState>> {
@@ -26,7 +25,6 @@ export async function validarDisponibilidade(state: RestauranteState): Promise<P
             erro: "Erro ao validar disponibilidade: " +
                 (error as Error).message,
             resposta: Mensagens(MensagensType.Erro)
-
         };
     }   
 }
