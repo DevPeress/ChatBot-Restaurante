@@ -1,18 +1,18 @@
-import { AIMessage, HumanMessage, SystemMessage } from "langchain";
+import { AIMessage, SystemMessage } from "langchain";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
-import { getInputPrompt } from "../prompts/input.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
+import { getOutPutPrompt } from "../prompts/output.ts";
 
-export async function safeGuard(
+export async function safeGuardOutput(
     state: RestauranteState
 ) : Promise<Partial<RestauranteState>> {
     try {
-        const mensagensDoUsuario = state.messages.at(-1)?.text ?? "";
+        const mensagensDaIA = state.resposta ?? "";
 
         const messages = [
-            new SystemMessage(getInputPrompt()),
-            new HumanMessage(mensagensDoUsuario!)
+            new SystemMessage(getOutPutPrompt()),
+            new AIMessage(mensagensDaIA!)
         ]
         const validar = await model.invoke(messages);
 
@@ -20,7 +20,11 @@ export async function safeGuard(
         {
             return {
                 safe: false,
-                erro: "Não foi possível validar a segurança da mensagem."
+                erro: "Não foi possível validar a segurança da mensagem.",
+                messages: [
+                    ...state.messages,
+                    new AIMessage(Mensagens(MensagensType.Erro)),
+                ],
             };
         }
 
@@ -36,16 +40,20 @@ export async function safeGuard(
         {
             return {
                 safe: false,
-                 messages: [
+                messages: [
                     ...state.messages,
-                    new AIMessage(Mensagens(MensagensType.Maliciosa)),
+                    new AIMessage(Mensagens(MensagensType.Erro)),
                 ],
-                erro: "Mensagem maliciosa detectada. Esse tipo de mensagem não será executada dentro do sistema!"
+                erro: "Mensagem maliciosa detectada para output. Esse tipo de mensagem não será executada dentro do sistema!"
             };
         }
 
         return {
             safe: true,
+            messages: [
+                ...state.messages,
+                new AIMessage(mensagensDaIA),
+            ],
         }
     } catch (error) {
         console.error("Erro ao validar safe guard:", error);

@@ -12,12 +12,13 @@ import { reservaRecusada } from "./nodes/reservaRecusada.ts";
 import { validarDadosReserva } from "./nodes/validarDadosReserva.ts";
 import { mensagemErroAoReservar } from "./nodes/mensagemErroAoReservar.ts";
 import { cancelarReserva, solicitaCancelamentoReserva } from "./nodes/cancelarReserva.ts";
-import { safeGuard } from "./nodes/safeGuard.ts";
+import { safeGuardInput } from "./nodes/safeGuardInput.ts";
 import { requisicaoNome } from "./nodes/requisicaoNome.ts";
 import { solicitaListagemDeReservas, validarDadosListagemReservas } from "./nodes/dadosListagemReservas.ts";
+import { safeGuardOutput } from "./nodes/safeGuardOutput.ts";
 
 export const graphData = new StateGraph({ stateSchema: RestauranteData })
-    .addNode("safeGuard", safeGuard)
+    .addNode("safeGuardInput", safeGuardInput)
     .addNode("validarDadosReserva", validarDadosReserva)
     .addNode("validarDisponibilidade", validarDisponibilidade)
     .addNode("indisponivelReserva", indisponivelReserva)
@@ -29,11 +30,12 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
     .addNode("cancelarReserva", cancelarReserva)
     .addNode("requisicaoNome", requisicaoNome)
     .addNode("validarDadosListagem", validarDadosListagemReservas)
+    .addNode("safeGuardOutput", safeGuardOutput)
 
-    .addEdge(START, "safeGuard")
+    .addEdge(START, "safeGuardInput")
 
     .addConditionalEdges(
-      "safeGuard",
+      "safeGuardInput",
       (state: RestauranteState) => {
         if (state.safe !== true) return "bloqueado";
 
@@ -113,17 +115,19 @@ export const graphData = new StateGraph({ stateSchema: RestauranteData })
         return "validarDisponibilidade";
       },
       {
-        concluir: END,
+        concluir: "safeGuardOutput",
         validarDisponibilidade: "validarDisponibilidade",
       }
     )
-    .addEdge("disponivelReserva", END)
-    .addEdge("inserirReserva", END)
-    .addEdge("reservaRecusada", END)
-    .addEdge("indisponivelReserva", END)
-    .addEdge("mensagemErroAoReservar", END)
-    .addEdge("cancelarReserva", END)
-    .addEdge("requisicaoNome", END)
-    .addEdge("validarDadosListagem", END)
+    .addEdge("disponivelReserva", "safeGuardOutput")
+    .addEdge("inserirReserva", "safeGuardOutput")
+    .addEdge("reservaRecusada", "safeGuardOutput")
+    .addEdge("indisponivelReserva", "safeGuardOutput")
+    .addEdge("mensagemErroAoReservar", "safeGuardOutput")
+    .addEdge("cancelarReserva", "safeGuardOutput")
+    .addEdge("requisicaoNome", "safeGuardOutput")
+    .addEdge("validarDadosListagem", "safeGuardOutput")
+
+    .addEdge("safeGuardOutput", END)
 
     .compile();

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { checkarReservas } from "../../services/reservas.ts";
-import { AIMessage, BaseMessage } from "langchain";
+import { BaseMessage } from "langchain";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 import type { RestauranteState } from "../state.ts";
 import type { RowDataPacket } from "mysql2";
@@ -44,10 +44,7 @@ export async function validarDadosListagemReservas(
         const reservas: dadosReservasSchema[] = await checkarReservas(mensagensDoUsuario);
         if (reservas.length === 0)
             return {
-                messages: [
-                    ...state.messages,
-                    new AIMessage(Mensagens(MensagensType.ZeroReservas)),
-                ],
+                resposta: Mensagens(MensagensType.ZeroReservas)
             };
 
        const reservasFormatadas = reservas
@@ -57,10 +54,7 @@ export async function validarDadosListagemReservas(
             .join("\n\n");
 
         return {
-            messages: [
-                ...state.messages,
-                new AIMessage(reservasFormatadas),
-            ],
+            resposta: reservasFormatadas
         };
     } catch (error) {
         console.error("Erro ao validar listagem:", error);
@@ -69,10 +63,7 @@ export async function validarDadosListagemReservas(
             sucesso: false,
             erro: "Erro ao validar listagem: " +
                 (error as Error).message,
-            messages: [
-                ...state.messages,
-                new AIMessage(Mensagens(MensagensType.Erro)),
-            ],
+            resposta: (Mensagens(MensagensType.Erro))
         };
     }
 }

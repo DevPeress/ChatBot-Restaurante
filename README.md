@@ -5,18 +5,20 @@ desenvolvida com Node.js, TypeScript, Fastify, LangGraph e LangChain/OpenRouter.
 
 O assistente coleta nome, quantidade de pessoas e data/horário, valida a
 disponibilidade no MySQL, solicita confirmação ao cliente e permite cadastrar
-ou cancelar reservas.
+listar e cancelar reservas.
 
 ## Funcionalidades
 
-- Extração estruturada dos dados da reserva.
+- Extração estruturada dos dados da reserva com evidências validadas.
 - Solicitação dos dados ainda não informados pelo cliente.
+- Reconhecimento de nomes, quantidades e formatos comuns de data e horário.
 - Verificação de disponibilidade por data e horário.
 - Confirmação explícita antes da criação da reserva.
 - Cadastro e cancelamento persistidos no MySQL.
+- Listagem das reservas pelo nome do reservante.
 - Classificação de segurança das mensagens antes do processamento.
+- Validação de segurança das respostas antes do envio ao usuário.
 - Continuação de uma conversa por meio do estado enviado pela API.
-- Listagem de Reservas baseada no nome da reserva.
 
 ## Tecnologias
 
@@ -142,6 +144,8 @@ Exemplo:
 | `idReserva` | integer | ID usado no cancelamento. |
 | `sucesso` | boolean | Resultado da última etapa do fluxo. |
 | `erro` | string | Mensagem da última etapa com erro. |
+| `safe` | boolean | Resultado da classificação de segurança da entrada ou saída. |
+| `resposta` | string | Mensagem final produzida pelo assistente. |
 
 O histórico usa objetos com `role` igual a `human` ou `ai`:
 
@@ -198,6 +202,28 @@ Ou envie o campo estruturado:
 }
 ```
 
+### Consultar reservas
+
+Envie uma solicitação contendo palavras como `listar`, `minhas reservas` ou
+`meu nome`. O assistente solicitará o nome do reservante e exibirá os registros
+encontrados com ID, quantidade de pessoas e horário:
+
+```bash
+curl -X POST http://127.0.0.1:3000/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\":\"Quero ver minhas reservas\"}"
+```
+
+Em seguida, informe o nome utilizado no cadastro:
+
+```json
+{
+  "message": "Fabrício Peres",
+  "messages": [],
+  "confirmacaoReserva": "listagem"
+}
+```
+
 ## Formatos de data e horário
 
 O serviço de reservas reconhece formatos como:
@@ -217,14 +243,18 @@ mensagem deve informar data e horário.
 O grafo segue os seguintes passos:
 
 1. Executa a classificação de segurança.
-2. Detecta pedidos de cancelamento.
-3. Avalia respostas a uma confirmação pendente.
-4. Valida nome, quantidade de pessoas e horário.
-5. Consulta a disponibilidade no MySQL.
-6. Pede confirmação ao cliente.
-7. Cria ou recusa a reserva conforme a resposta.
+2. Detecta pedidos de cancelamento ou listagem.
+3. Solicita o nome do reservante para a listagem, quando necessário.
+4. Avalia respostas a uma confirmação pendente.
+5. Extrai e valida nome, quantidade de pessoas e horário.
+6. Consulta a disponibilidade no MySQL.
+7. Pede confirmação ao cliente.
+8. Cria ou recusa a reserva conforme a resposta.
+9. Valida a resposta com o filtro de segurança de saída e adiciona-a ao histórico.
 
 A implementação principal está em [src/graph/graph.ts](src/graph/graph.ts).
+
+![Fluxo atual do LangGraph](src/img/ProjetoV6.png)
 
 ## Estrutura do projeto
 
@@ -233,12 +263,14 @@ src/
 ├── index.ts                 # Inicialização do servidor Fastify
 ├── config/
 │   ├── database.ts          # Pool de conexão com MySQL
+│   ├── mensagens.ts         # Mensagens padrão do assistente
 │   └── model.ts             # Configuração do modelo OpenRouter
 ├── routes/chat.ts           # Rota POST /chat
 ├── graph/
 │   ├── graph.ts             # Grafo e transições LangGraph
 │   ├── state.ts             # Estado e schema Zod
-│   └── nodes/               # Etapas do fluxo de atendimento
+│   ├── nodes/               # Etapas do fluxo de atendimento
+│   └── prompts/             # Prompts de validação e segurança
 └── services/reservas.ts     # Operações de disponibilidade e reservas
 BD/
 └── script.sql               # Criação da tabela Reservas
