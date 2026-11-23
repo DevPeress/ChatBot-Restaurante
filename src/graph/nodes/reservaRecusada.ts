@@ -8,9 +8,6 @@ export async function reservaRecusada(
     return {
         sucesso: false,
         confirmacaoReserva: "recusada",
-        messages: [
-            ...state.messages,
-            new AIMessage(Mensagens(MensagensType.ReservaRecusada)),
-        ],
+        resposta: Mensagens(MensagensType.ReservaRecusada),
     };
 }
