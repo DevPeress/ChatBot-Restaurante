@@ -1,8 +1,8 @@
-import { AIMessage, HumanMessage, SystemMessage } from "langchain";
+import { AIMessage, SystemMessage } from "langchain";
 import { model } from "../../config/model.ts";
 import type { RestauranteState } from "../state.ts";
-import { getInputPrompt } from "../prompts/input.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
+import { getOutPutPrompt } from "../prompts/output.ts";
 
 export async function safeGuardOutput(
     state: RestauranteState
@@ -11,7 +11,7 @@ export async function safeGuardOutput(
         const mensagensDaIA = state.resposta ?? "";
 
         const messages = [
-            new SystemMessage(getInputPrompt()),
+            new SystemMessage(getOutPutPrompt()),
             new AIMessage(mensagensDaIA!)
         ]
         const validar = await model.invoke(messages);
