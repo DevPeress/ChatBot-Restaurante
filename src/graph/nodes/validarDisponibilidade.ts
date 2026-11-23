@@ -25,10 +25,8 @@ export async function validarDisponibilidade(state: RestauranteState): Promise<P
             sucesso: false,
             erro: "Erro ao validar disponibilidade: " +
                 (error as Error).message,
-            messages: [
-                ...state.messages,
-                new AIMessage(Mensagens(MensagensType.Erro)),
-            ],
+            resposta: Mensagens(MensagensType.Erro)
+
         };
     }   
 }
