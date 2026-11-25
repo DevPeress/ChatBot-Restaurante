@@ -5,6 +5,7 @@ import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 export async function indisponivelReserva(state: RestauranteState): Promise<Partial<RestauranteState>> {
     return {
         sucesso: false,
+        confirmacaoReserva: undefined,
         resposta: Mensagens(MensagensType.IndisponivelReserva),
     } 
 }
