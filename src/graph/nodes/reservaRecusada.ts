@@ -6,7 +6,7 @@ export async function reservaRecusada(
 ): Promise<Partial<RestauranteState>> {
     return {
         sucesso: false,
-        confirmacaoReserva: "recusada",
+        confirmacaoReserva: undefined,
         resposta: Mensagens(MensagensType.ReservaRecusada),
     };
 }

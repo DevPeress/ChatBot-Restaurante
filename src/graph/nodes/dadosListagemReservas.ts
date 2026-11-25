@@ -44,6 +44,7 @@ export async function validarDadosListagemReservas(
         const reservas: dadosReservasSchema[] = await checkarReservas(mensagensDoUsuario);
         if (reservas.length === 0)
             return {
+                confirmacaoReserva: undefined,
                 resposta: Mensagens(MensagensType.ZeroReservas)
             };
 
@@ -54,6 +55,7 @@ export async function validarDadosListagemReservas(
             .join("\n\n");
 
         return {
+            confirmacaoReserva: undefined,
             resposta: reservasFormatadas
         };
     } catch (error) {
@@ -61,6 +63,7 @@ export async function validarDadosListagemReservas(
 
         return {
             sucesso: false,
+            confirmacaoReserva: undefined,
             erro: "Erro ao validar listagem: " +
                 (error as Error).message,
             resposta: (Mensagens(MensagensType.Erro))

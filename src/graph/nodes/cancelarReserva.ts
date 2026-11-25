@@ -3,27 +3,6 @@ import type { RestauranteState } from "../state.ts";
 import { removerReserva } from "../../services/reservas.ts";
 import { Mensagens, MensagensType } from "../../config/mensagens.ts";
 
-export function solicitaCancelamentoReserva(messages: BaseMessage[]): boolean {
-  const ultimaMensagemHumana = [...messages]
-    .reverse()
-    .find((message) => message.getType() === "human");
-
-  if (!ultimaMensagemHumana) {
-    return false;
-  }
-
-  const texto = typeof ultimaMensagemHumana.content === "string"
-    ? ultimaMensagemHumana.content
-    : JSON.stringify(ultimaMensagemHumana.content);
-
-  const normalizado = texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
-  return /\b(cancelar|cancelamento|cancela|cancele|remover|remova|excluir|exclua|desistir)\b/.test(normalizado);
-}
-
 function extrairTexto(message: BaseMessage): string {
     if (typeof message.content === "string") {
         return message.content;
@@ -69,6 +48,10 @@ export function extrairIdReserva(
         return Number(idExplicito[1]);
     }
 
+    if (/^\s*#?\s*\d+\s*$/.test(texto)) {
+        return Number(texto.replace(/[^\d]/g, ""));
+    }
+
     const numeroDepoisDoPedido = texto.match(
         /\b(?:cancelar?|remover|excluir|desativar)\b.{0,40}?\b(\d+)\b/i
     );
@@ -87,6 +70,7 @@ export async function cancelarReserva(
     if (!idReserva) {
         return {
             sucesso: false,
+            confirmacaoReserva: "cancelar",
             erro: "Informe o ID de registro da reserva que deseja cancelar.",
             resposta: Mensagens(MensagensType.InformarId)
         };
@@ -98,7 +82,7 @@ export async function cancelarReserva(
             return {
                 sucesso: true,
                 idReserva: undefined,
-                confirmacaoReserva: "recusada",
+                confirmacaoReserva: undefined,
                 erro: undefined,
                 resposta: Mensagens(MensagensType.ReservaCancelada)
             };

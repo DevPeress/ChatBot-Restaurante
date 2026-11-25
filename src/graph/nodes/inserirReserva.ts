@@ -20,6 +20,7 @@ export async function inserirReserva(state: RestauranteState): Promise<Partial<R
 
         return {
             sucesso: true,
+            confirmacaoReserva: undefined,
             resposta: Mensagens(MensagensType.InserirReserva) + reserva.id,
         } 
     } catch (error) {
