@@ -140,7 +140,8 @@ Exemplo:
 | `nomeReservado` | string | Nome informado para a reserva. |
 | `qtdePessoas` | integer | Quantidade de pessoas. |
 | `dataHora` | string | Data e horário informados pelo usuário. |
-| `confirmacaoReserva` | string | Estado: `aguardando`, `confirmada`, `listagem` ou `recusada`. |
+| `intencao` | string | Ação identificada: reserva, cancelamento, listagem ou resposta à confirmação. |
+| `confirmacaoReserva` | string | Estado do fluxo, como `aguardando`, `confirmada`, `recusada`, `cancelar`, `nome` ou `listagem`. |
 | `idReserva` | integer | ID usado no cancelamento. |
 | `sucesso` | boolean | Resultado da última etapa do fluxo. |
 | `erro` | string | Mensagem da última etapa com erro. |
@@ -202,6 +203,9 @@ Ou envie o campo estruturado:
 }
 ```
 
+Se o ID não for informado, o assistente o solicitará. Responda com o ID e
+reutilize o histórico e o estado devolvidos pela resposta anterior.
+
 ### Consultar reservas
 
 Envie uma solicitação contendo palavras como `listar`, `minhas reservas` ou
@@ -246,7 +250,7 @@ O grafo segue os seguintes passos:
 2. Detecta pedidos de cancelamento ou listagem.
 3. Solicita o nome do reservante para a listagem, quando necessário.
 4. Avalia respostas a uma confirmação pendente.
-5. Extrai e valida nome, quantidade de pessoas e horário.
+5. Extrai e valida nome, quantidade de pessoas e data e horário.
 6. Consulta a disponibilidade no MySQL.
 7. Pede confirmação ao cliente.
 8. Cria ou recusa a reserva conforme a resposta.
