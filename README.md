@@ -258,7 +258,7 @@ O grafo segue os seguintes passos:
 
 A implementação principal está em [src/graph/graph.ts](src/graph/graph.ts).
 
-![Fluxo atual do LangGraph](src/img/ProjetoV6.png)
+![Fluxo atual do LangGraph](src/img/ProjetoV7.png)
 
 ## Estrutura do projeto
 
