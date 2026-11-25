@@ -11,7 +11,8 @@ export enum MensagensType {
     "NaoEncontradaId",
     "Erro",
     "RequisitarNome",
-    "ZeroReservas"
+    "ZeroReservas",
+    "IdentificarIntencao"
 }
 
 export const Mensagens = (tipo: MensagensType) => {
@@ -54,5 +55,8 @@ export const Mensagens = (tipo: MensagensType) => {
 
         case MensagensType.ZeroReservas:
             return "Não foi encontrado nenhum reserva em seu nome"
+
+        case MensagensType.IdentificarIntencao:
+            return "Não foi possível identificar a inteção."
     }
 }
