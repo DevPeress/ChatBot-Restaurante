@@ -132,7 +132,7 @@ function normalizarData(texto: string): string | undefined {
 
 function normalizarHora(texto: string): string | undefined {
     const horario24h = texto.match(
-        /(?:^|\s|t)([01]?\d|2[0-3])(?::([0-5]\d)|h([0-5]\d)?)\b/i
+        /(?:^|\s|t)([01]?\d|2[0-3])(?::([0-5]\d)|\s*h(?:oras?|rs?)?([0-5]\d)?)\b/i
     );
 
     if (horario24h) {
@@ -184,6 +184,11 @@ function normalizarHorarioReserva(valor: string): HorarioNormalizado | undefined
     return data ? { data, hora } : { hora };
 }
 
+export function dataHoraReservaValida(valor: string): boolean {
+    const horario = normalizarHorarioReserva(valor);
+    return Boolean(horario?.data && horario.hora);
+}
+
 export async function adicionarReserva(reserva: Omit<Reserva, "id">): Promise<Reserva> {
     const query = `
         INSERT INTO Reservas (NomeReservado, QtdDePessoas, DataHora)
@@ -231,8 +236,8 @@ export async function checkarDisponibilidade(
 ): Promise<boolean> {
     const horarioSolicitado = normalizarHorarioReserva(horario);
 
-    if (!horarioSolicitado) {
-        throw new Error(`Não foi possível interpretar o horário: "${horario}".`);
+    if (!horarioSolicitado?.data) {
+        throw new Error(`Não foi possível interpretar a data e o horário: "${horario}".`);
     }
 
     const dataHora = `${horarioSolicitado.data} ${horarioSolicitado.hora}:00`;
